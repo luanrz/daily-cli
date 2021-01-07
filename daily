@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+
+WORK_PATH=$(dirname "$0")
+cd "${WORK_PATH}" || exit
+python3 -B daily.py "$@"
