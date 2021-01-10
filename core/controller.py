@@ -23,8 +23,20 @@ class Controller:
         behavior, data = self.command.load(commands).handle()
         if behavior == BehaviorEnum.ADD_TASKS:
             self.service.add_tasks(data)
+        if behavior == BehaviorEnum.DELETE_TASKS:
+            self.service.delete_tasks(data)
+        if behavior == BehaviorEnum.UPDATE_TASKS:
+            self.service.update_tasks(data)
+        if behavior == BehaviorEnum.FINISH_TASKS:
+            self.service.finish_tasks(data)
         if behavior == BehaviorEnum.ADD_TASK_STEPS:
             self.service.add_task_steps(data)
+        if behavior == BehaviorEnum.DELETE_TASK_STEPS:
+            self.service.delete_task_steps(data)
+        if behavior == BehaviorEnum.UPDATE_TASK_STEPS:
+            self.service.update_task_steps(data)
+        if behavior == BehaviorEnum.FINISH_TASK_STEPS:
+            self.service.finish_task_steps(data)
         if behavior == BehaviorEnum.ERROR_COMMAND:
             self.view.load(data).error()
 
