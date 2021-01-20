@@ -37,5 +37,11 @@ class Controller:
             self.service.update_task_steps(data)
         if behavior == BehaviorEnum.FINISH_TASK_STEPS:
             self.service.finish_task_steps(data)
+        if behavior == BehaviorEnum.SYNC:
+            pass
+        if behavior == BehaviorEnum.EXPORT:
+            pass
+        if behavior == BehaviorEnum.HELP:
+            self.view.load(self.service.get_help_doc()).print_info()
         if behavior == BehaviorEnum.ERROR_COMMAND:
             self.view.load(data).print_info()

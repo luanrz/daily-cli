@@ -23,6 +23,12 @@ class Command:
             return self.__handle_finish_tasks()
         if command1 == 't' or command1 == 'task':
             return self.__handle_task()
+        if command1 == 's' or command1 == 'sync':
+            return BehaviorEnum.SYNC, None
+        if command1 == 'e' or command1 == 'export':
+            return BehaviorEnum.EXPORT, None
+        if command1 == 'h' or command1 == 'help':
+            return BehaviorEnum.HELP, None
         return BehaviorEnum.ERROR_COMMAND, 'Error Command: [ ' + command1 + ' ] '
 
     def __handle_add_tasks(self):
@@ -122,4 +128,5 @@ class Command:
 
 BehaviorEnum = Enum('BehaviorEnum', (
     'ERROR_COMMAND', 'ADD_TASKS', 'DELETE_TASKS', 'UPDATE_TASKS', 'FINISH_TASKS',
-    'ADD_TASK_STEPS', 'DELETE_TASK_STEPS', 'UPDATE_TASK_STEPS', 'FINISH_TASK_STEPS'))
+    'ADD_TASK_STEPS', 'DELETE_TASK_STEPS', 'UPDATE_TASK_STEPS', 'FINISH_TASK_STEPS',
+    'SYNC', 'EXPORT', 'HELP'))

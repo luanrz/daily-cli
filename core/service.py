@@ -1,6 +1,7 @@
 from core.dao import TaskDao, TaskStepDao
 from base.po.task import Task
 from base.po.task_step import TaskStep
+from base.help import usage
 
 
 class Service:
@@ -123,3 +124,7 @@ class Service:
         is_month_equal = int(today_date_list[1]) == int(create_date_list[1])
         is_day_equal = int(today_date_list[2]) == int(create_date_list[2])
         return is_year_equal and is_month_equal and is_day_equal
+
+    @staticmethod
+    def get_help_doc():
+        return usage
