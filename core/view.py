@@ -12,10 +12,7 @@ class View:
     def show(self):
         TaskWidget().load(self.__data).render()
 
-    def success(self):
-        print(self.__data)
-
-    def error(self):
+    def print_info(self):
         print(self.__data)
 
 
@@ -57,6 +54,19 @@ class TaskWidget:
         curses.cbreak()
         self.__stdscr.keypad(True)
 
+        if len(self.__tasks) == 0:
+            self.render_empty()
+        else:
+            self.render_tasks()
+
+        self.__stdscr.getch()
+
+        self.__stdscr.keypad(False)
+        curses.nocbreak()
+        curses.echo()
+        curses.endwin()
+
+    def render_tasks(self):
         y = self.__begin_y
         task_id_index = 1
         for task in self.__tasks:
@@ -74,12 +84,11 @@ class TaskWidget:
             task_id_index = task_id_index + 1
             y = y + 1
 
-        self.__stdscr.getch()
-
-        self.__stdscr.keypad(False)
-        curses.nocbreak()
-        curses.echo()
-        curses.endwin()
+    def render_empty(self):
+        tip = "Nothing to do, Enjoy your life."
+        begin_y = curses.LINES // 2
+        begin_x = (curses.COLS - len(tip.encode('gbk'))) // 2
+        self.__stdscr.addstr(begin_y, begin_x, tip, curses.A_BOLD)
 
 
 def get_content_max_length(tasks):

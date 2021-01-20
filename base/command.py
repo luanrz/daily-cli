@@ -63,6 +63,7 @@ class Command:
         for item in self.commands[1:]:
             task = Task()
             task.index = item
+            task.finish_time = task.get_current_time()
             tasks.append(task)
         return BehaviorEnum.FINISH_TASKS, tasks
 
@@ -85,6 +86,7 @@ class Command:
             task_step = TaskStep()
             task_step.task_step_id = task_step.get_random_task_step_id()
             task_step.content = item
+            task_step.create_time = task_step.get_current_time()
             task.task_steps.append(task_step)
         return BehaviorEnum.ADD_TASK_STEPS, task
 
@@ -113,6 +115,7 @@ class Command:
         for item in self.commands[3:]:
             task_step = TaskStep()
             task_step.index = item
+            task_step.finish_time = task_step.get_current_time()
             task.task_steps.append(task_step)
         return BehaviorEnum.FINISH_TASK_STEPS, task
 

@@ -38,5 +38,4 @@ class Controller:
         if behavior == BehaviorEnum.FINISH_TASK_STEPS:
             self.service.finish_task_steps(data)
         if behavior == BehaviorEnum.ERROR_COMMAND:
-            self.view.load(data).error()
-
+            self.view.load(data).print_info()

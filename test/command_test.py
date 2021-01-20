@@ -14,6 +14,8 @@ class CommandTest(unittest.TestCase):
         self.assertEqual(2, len(tasks))
         self.assertEqual('task1', tasks[0].content)
         self.assertEqual('task2', tasks[1].content)
+        self.assertIsNotNone(tasks[0].create_time)
+        self.assertIsNotNone(tasks[1].create_time)
 
     def test_delete_task_command(self):
         command_delete_tasks = 'd 1 2'.split(' ')
@@ -46,6 +48,8 @@ class CommandTest(unittest.TestCase):
         self.assertEqual(2, len(tasks))
         self.assertEqual('1', tasks[0].index)
         self.assertEqual('2', tasks[1].index)
+        self.assertIsNotNone(tasks[0].finish_time)
+        self.assertIsNotNone(tasks[1].finish_time)
 
     def test_insert_task_step_command(self):
         command_insert_task_steps = 't 1 a task_step_1 task_step_2'.split(' ')
@@ -55,6 +59,8 @@ class CommandTest(unittest.TestCase):
         self.assertEqual(2, len(task.task_steps))
         self.assertEqual('task_step_1', task.task_steps[0].content)
         self.assertEqual('task_step_2', task.task_steps[1].content)
+        self.assertIsNotNone(task.task_steps[0].create_time)
+        self.assertIsNotNone(task.task_steps[1].create_time)
 
     def test_delete_task_step_command(self):
         command_insert_task_steps = 't 1 d 1 2'.split(' ')
@@ -84,3 +90,5 @@ class CommandTest(unittest.TestCase):
         self.assertEqual(2, len(task.task_steps))
         self.assertEqual('1', task.task_steps[0].index)
         self.assertEqual('2', task.task_steps[1].index)
+        self.assertIsNotNone(task.task_steps[0].finish_time)
+        self.assertIsNotNone(task.task_steps[1].finish_time)
