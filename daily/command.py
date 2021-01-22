@@ -1,6 +1,5 @@
 from enum import Enum
-from base.po.task import Task
-from base.po.task_step import TaskStep
+from daily.model import Task, TaskStep
 
 
 class Command:

@@ -1,6 +1,5 @@
-#!/usr/bin/python3
 import sys
-from core.controller import Controller
+from daily.controller import Controller
 
 
 def run():

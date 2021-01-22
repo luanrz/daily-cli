@@ -1,6 +1,6 @@
 import unittest
 
-from base.command import Command, BehaviorEnum
+from daily.command import Command, BehaviorEnum
 
 
 class CommandTest(unittest.TestCase):

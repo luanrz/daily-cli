@@ -1,7 +1,6 @@
-from core.dao import TaskDao, TaskStepDao
-from base.po.task import Task
-from base.po.task_step import TaskStep
-from base.help import usage
+from daily.dao import TaskDao, TaskStepDao
+from daily.model import Task, TaskStep
+from daily.config import help_doc
 
 
 class Service:
@@ -127,4 +126,4 @@ class Service:
 
     @staticmethod
     def get_help_doc():
-        return usage
+        return help_doc

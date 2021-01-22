@@ -1,7 +1,6 @@
-from base.config import GlobalConfig
-from base.po.task import Task
-from base.po.task_step import TaskStep
 import sqlite3
+from daily.config import GlobalConfig
+from daily.model import Task, TaskStep
 
 
 class DaoBase:

@@ -1,6 +1,6 @@
-from core.service import Service
-from core.view import View
-from base.command import Command, BehaviorEnum
+from daily.service import Service
+from daily.view import View
+from daily.command import Command, BehaviorEnum
 
 
 class Controller:

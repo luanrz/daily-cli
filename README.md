@@ -4,7 +4,7 @@
 
 ### 首页
 
-打开终端并进入项目根路径，执行`./daily`
+打开终端并进入项目bin路径，执行`./daily`
 
 ![](doc/img/home_page_zh.png)
 

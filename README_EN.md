@@ -3,7 +3,7 @@
 
 ### Home page
 
-Open the terminal and change directory to the project root, execute `./daily`
+Open the terminal and change directory to the project bin path, execute `./daily`
 
 ![](doc/img/home_page_en.png)
 

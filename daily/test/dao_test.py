@@ -1,8 +1,7 @@
 import unittest
 
-from base.po.task import Task
-from base.po.task_step import TaskStep
-from core.dao import TaskDao, TaskStepDao
+from daily.model import Task, TaskStep
+from daily.dao import TaskDao, TaskStepDao
 
 
 class DaoTest(unittest.TestCase):
