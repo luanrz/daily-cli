@@ -1,0 +1,41 @@
+@startuml
+
+title How to sync with server
+autonumber
+
+actor User
+participant LocalService
+participant LocalAspect
+database LocalDB
+participant RemoteServer
+
+== Local Data Initialization ==
+User ->> LocalService++: add task
+LocalService ->> LocalDB++: insert task
+return insert success
+LocalService ->> LocalAspect++: record operation
+LocalAspect ->> LocalDB++: insert  operation
+return insert success
+return record success
+return add success
+
+== User Authentication ==
+User ->> LocalService++: login
+LocalService ->> RemoteServer++: login
+return login success
+LocalService ->> LocalDB++: insert user
+return insert success
+return login success
+
+== Sync With Server ==
+User ->> LocalService++: sync
+LocalService ->> RemoteServer++: pull remote latest data \n(via local latest synchronized operation id)
+return pull success
+LocalService ->> LocalDB++: change local data
+return change success
+LocalService ->> RemoteServer++: push local data which marked as not synchronized
+return push success
+LocalService ->> LocalService: mark all operation as synchronized
+return sync success
+
+@enduml
