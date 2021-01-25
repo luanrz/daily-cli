@@ -27,8 +27,7 @@ class DaoTest(unittest.TestCase):
 
         task.status = Task.Status.FINISH.value
         task.finish_time = task.get_current_time()
-        self.task_dao.update_task_status(task)
-        self.task_dao.update_task_finish_time(task)
+        self.task_dao.update_task_status_and_finish_time(task)
         new_task = self.task_dao.find_task_by_task_id(task.task_id)
         self.assertEqual(task.status, new_task.status)
         self.assertIsNotNone(new_task.finish_time)
@@ -56,8 +55,7 @@ class DaoTest(unittest.TestCase):
 
         task_step.status = TaskStep.Status.FINISH.value
         task_step.finish_time = task_step.get_current_time()
-        self.task_step_dao.update_task_step_status(task_step)
-        self.task_step_dao.update_task_step_finish_time(task_step)
+        self.task_step_dao.update_task_step_status_and_finish_time(task_step)
         new_task_step = self.task_step_dao.find_task_step_by_task_step_id(task_step.task_step_id)
         self.assertEqual(task_step.status, new_task_step.status)
         self.assertIsNotNone(new_task_step.finish_time)

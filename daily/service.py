@@ -1,6 +1,27 @@
-from daily.dao import TaskDao, TaskStepDao
-from daily.model import Task, TaskStep
+import functools
+
+from daily.dao import TaskDao, TaskStepDao, OperationDao
+from daily.model import Task, TaskStep, Operation
 from daily.config import help_doc
+
+
+class Aspect:
+    @staticmethod
+    def record_operation(operation_type):
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kw):
+                operation_dao = OperationDao()
+                operation = Operation()
+                operation.operation_id = Operation.get_random_operation_id()
+                operation.status = Operation.Status.NOT_SYNCHRONIZED.value
+                operation.type = operation_type
+                operation.content = str(args[1])
+                operation.operate_time = Operation.get_current_time()
+                operation_dao.insert_operation(operation)
+                return func(*args, **kw)
+            return wrapper
+        return decorator
 
 
 class Service:
@@ -20,56 +41,49 @@ class Service:
 
     def add_tasks(self, tasks):
         for task in tasks:
-            self.task_dao.insert_task(task)
+            self.add_task(task)
 
     def delete_tasks(self, tasks):
         self.__fill_tasks_by_index(tasks)
         for task in tasks:
-            self.task_dao.delete_task(task.task_id)
+            self.delete_task(task)
 
     def update_tasks(self, tasks):
         self.__fill_tasks_by_index(tasks)
         for task in tasks:
-            self.task_dao.update_task_content(task)
+            self.update_task_content(task)
 
     def finish_tasks(self, tasks):
         self.__fill_tasks_by_index(tasks)
         self.__reverse_task_status(tasks)
         for task in tasks:
-            self.task_dao.update_task_status(task)
-            if task.status == Task.Status.FINISH.value:
-                self.task_dao.update_task_finish_time(task)
             if task.status == Task.Status.CREATE.value:
                 task.finish_time = None
-                self.task_dao.update_task_finish_time(task)
+            self.finish_task(task)
 
     def add_task_steps(self, task):
         self.__fill_task_by_index(task)
         for task_step in task.task_steps:
             task_step.task_id = task.task_id
-            self.task_step_dao.insert_task_step(task_step)
+            self.add_task_step(task_step)
 
     def delete_task_steps(self, task):
         self.__fill_task_by_index(task)
         for task_step in task.task_steps:
-            self.task_step_dao.delete_task_step(task_step)
-        pass
+            self.delete_task_step(task_step)
 
     def update_task_steps(self, task):
         self.__fill_task_by_index(task)
         for task_step in task.task_steps:
-            self.task_step_dao.update_task_step_content(task_step)
+            self.update_task_step(task_step)
 
     def finish_task_steps(self, task):
         self.__fill_task_by_index(task)
         self.__reverse_task_step_status(task)
         for task_step in task.task_steps:
-            self.task_step_dao.update_task_step_status(task_step)
-            if task_step.status == TaskStep.Status.FINISH.value:
-                self.task_step_dao.update_task_step_finish_time(task_step)
             if task_step.status == TaskStep.Status.CREATE.value:
                 task_step.finish_time = None
-                self.task_step_dao.update_task_step_finish_time(task_step)
+            self.finish_task_step(task_step)
 
     def __fill_tasks_by_index(self, tasks):
         full_all_task = self.get_tasks()
@@ -127,3 +141,35 @@ class Service:
     @staticmethod
     def get_help_doc():
         return help_doc
+
+    @Aspect.record_operation(Operation.Type.ADD_TASK.value)
+    def add_task(self, task):
+        self.task_dao.insert_task(task)
+
+    @Aspect.record_operation(Operation.Type.DELETE_TASK.value)
+    def delete_task(self, task):
+        self.task_dao.delete_task(task.task_id)
+
+    @Aspect.record_operation(Operation.Type.UPDATE_TASK.value)
+    def update_task_content(self, task):
+        self.task_dao.update_task_content(task)
+
+    @Aspect.record_operation(Operation.Type.UPDATE_TASK.value)
+    def finish_task(self, task):
+        self.task_dao.update_task_status_and_finish_time(task)
+
+    @Aspect.record_operation(Operation.Type.ADD_TASK_STEP.value)
+    def add_task_step(self, task_step):
+        self.task_step_dao.insert_task_step(task_step)
+
+    @Aspect.record_operation(Operation.Type.DELETE_TASK_STEP.value)
+    def delete_task_step(self, task_step):
+        self.task_step_dao.delete_task_step(task_step)
+
+    @Aspect.record_operation(Operation.Type.UPDATE_TASK_STEP.value)
+    def update_task_step(self, task_step):
+        self.task_step_dao.update_task_step_content(task_step)
+
+    @Aspect.record_operation(Operation.Type.UPDATE_TASK_STEP.value)
+    def finish_task_step(self, task_step):
+        self.task_step_dao.update_task_step_status_and_finish_time(task_step)

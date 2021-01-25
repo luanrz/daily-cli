@@ -34,8 +34,7 @@ class TaskDao(DaoBase):
     __SQL_INSERT_TASK = "INSERT INTO `TASK` (TASK_ID, CONTENT, CREATE_TIME) VALUES (?, ?, ?)"
     __SQL_DELETE_TASK = "DELETE FROM TASK WHERE TASK_ID = ?"
     __SQL_UPDATE_TASK_CONTENT = "UPDATE TASK SET CONTENT = ? WHERE TASK_ID = ?"
-    __SQL_UPDATE_TASK_STATUS = "UPDATE TASK SET STATUS = ? WHERE TASK_ID = ?"
-    __SQL_UPDATE_TASK_FINISH_TIME = "UPDATE TASK SET FINISH_TIME = ? WHERE TASK_ID = ?"
+    __SQL_UPDATE_TASK_STATUS_AND_FINISH_TIME = "UPDATE TASK SET STATUS = ? , FINISH_TIME = ? WHERE TASK_ID = ?"
 
     def _init_table(self):
         if not self.__is_table_task_exist():
@@ -65,12 +64,8 @@ class TaskDao(DaoBase):
         self.cursor.execute(self.__SQL_UPDATE_TASK_CONTENT, (task.content, task.task_id))
         self.connect.commit()
 
-    def update_task_status(self, task):
-        self.cursor.execute(self.__SQL_UPDATE_TASK_STATUS, (task.status, task.task_id))
-        self.connect.commit()
-
-    def update_task_finish_time(self, task):
-        self.cursor.execute(self.__SQL_UPDATE_TASK_FINISH_TIME, (task.finish_time, task.task_id))
+    def update_task_status_and_finish_time(self, task):
+        self.cursor.execute(self.__SQL_UPDATE_TASK_STATUS_AND_FINISH_TIME, (task.status, task.finish_time, task.task_id))
         self.connect.commit()
 
     @staticmethod
@@ -111,8 +106,7 @@ class TaskStepDao(DaoBase):
     __SQL_INSERT_TASK_STEP = "INSERT INTO 'TASK_STEP' (TASK_STEP_ID, TASK_ID, CONTENT, CREATE_TIME) VALUES (?, ?, ?, ?)"
     __SQL_DELETE_TASK_STEP = "DELETE FROM TASK_STEP WHERE TASK_STEP_ID = ?"
     __SQL_UPDATE_TASK_STEP_CONTENT = "UPDATE TASK_STEP SET CONTENT = ? WHERE TASK_STEP_ID = ?"
-    __SQL_UPDATE_TASK_STEP_STATUS = "UPDATE TASK_STEP SET STATUS = ? WHERE TASK_STEP_ID = ?"
-    __SQL_UPDATE_TASK_STEP_FINISH_TIME = "UPDATE TASK_STEP SET FINISH_TIME = ? WHERE TASK_STEP_ID = ?"
+    __SQL_UPDATE_TASK_STEP_STATUS_AND_FINISH_TIME = "UPDATE TASK_STEP SET STATUS = ? , FINISH_TIME = ? WHERE TASK_STEP_ID = ?"
 
     def _init_table(self):
         if not self.__is_table_task_step_exist():
@@ -146,12 +140,8 @@ class TaskStepDao(DaoBase):
         self.cursor.execute(self.__SQL_UPDATE_TASK_STEP_CONTENT, (task_step.content, task_step.task_step_id))
         self.connect.commit()
 
-    def update_task_step_status(self, task_step):
-        self.cursor.execute(self.__SQL_UPDATE_TASK_STEP_STATUS, (task_step.status, task_step.task_step_id))
-        self.connect.commit()
-
-    def update_task_step_finish_time(self, task_step):
-        self.cursor.execute(self.__SQL_UPDATE_TASK_STEP_FINISH_TIME, (task_step.finish_time, task_step.task_step_id))
+    def update_task_step_status_and_finish_time(self, task_step):
+        self.cursor.execute(self.__SQL_UPDATE_TASK_STEP_STATUS_AND_FINISH_TIME, (task_step.status, task_step.finish_time, task_step.task_step_id))
         self.connect.commit()
 
     @staticmethod
@@ -172,3 +162,34 @@ class TaskStepDao(DaoBase):
         task_step.deadline_time = task_step_tuple[5]
         task_step.finish_time = task_step_tuple[6]
         return task_step
+
+
+class OperationDao(DaoBase):
+    __SQL_CREATE_OPERATION = "CREATE TABLE `OPERATION` (\
+      `OPERATION_ID` varchar(32) NOT NULL,\
+      `STATUS` varchar(10) NOT NULL,\
+      `TYPE` varchar(32) NOT NULL DEFAULT 0,\
+      `CONTENT` varchar(1014) NOT NULL,\
+      `OPERATE_TIME` datetime NOT NULL,\
+      PRIMARY KEY(OPERATION_ID)\
+    )"
+
+    __SQL_SELECT_TABLE_OPERATION_COUNT = "SELECT COUNT(*) FROM `sqlite_master` WHERE type='table' AND name='OPERATION'"
+    __SQL_INSERT_OPERATION = "INSERT INTO 'OPERATION' (OPERATION_ID, STATUS, `TYPE`, CONTENT, OPERATE_TIME) VALUES (?, ?, ?, ?, ?)"
+    __SQL_UPDATE_OPERATION_STATUS = "UPDATE OPERATION SET STATUS = ? WHERE OPERATION_ID = ?"
+
+    def _init_table(self):
+        if not self.__is_table_task_exist():
+            self.cursor.execute(self.__SQL_CREATE_OPERATION)
+
+    def __is_table_task_exist(self):
+        table_task_count = self.cursor.execute(self.__SQL_SELECT_TABLE_OPERATION_COUNT).fetchall()[0][0]
+        return table_task_count == 1
+
+    def insert_operation(self, operation):
+        self.cursor.execute(self.__SQL_INSERT_OPERATION, (operation.operation_id, operation.status, operation.type, operation.content, operation.operate_time))
+        self.connect.commit()
+
+    def update_operation_status(self, operation):
+        self.cursor.execute(self.__SQL_UPDATE_OPERATION_STATUS, (operation.status, operation.operation_id))
+        self.connect.commit()
