@@ -113,3 +113,22 @@ class Operation:
     @staticmethod
     def get_current_time():
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+
+class Config:
+    def __init__(self):
+        self.key = None
+        self.value = None
+
+
+class UserAuth:
+    def __init__(self):
+        self.username = None
+        self.password = None
+
+
+class User:
+    def __init__(self):
+        self.username = None
+        self.user_id = None
+        self.jwt = None

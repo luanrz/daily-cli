@@ -1,8 +1,9 @@
 import functools
 
-from daily.dao import TaskDao, TaskStepDao, OperationDao
-from daily.model import Task, TaskStep, Operation
-from daily.config import help_doc
+from daily.dao import TaskDao, TaskStepDao, OperationDao, UserDao
+from daily.model import Task, TaskStep, Operation, User
+from daily.config import help_doc, CustomConfig
+from daily.server import Api
 
 
 class Aspect:
@@ -24,7 +25,7 @@ class Aspect:
         return decorator
 
 
-class Service:
+class TaskService:
     def __init__(self):
         self.task_dao = TaskDao()
         self.task_step_dao = TaskStepDao()
@@ -124,7 +125,7 @@ class Service:
 
     @staticmethod
     def __should_task_shown(task):
-        is_toddy = Service.__is_today(task.create_time)
+        is_toddy = TaskService.__is_today(task.create_time)
         is_undone = task.status == Task.Status.CREATE.value
         return is_toddy or is_undone
 
@@ -137,10 +138,6 @@ class Service:
         is_month_equal = int(today_date_list[1]) == int(create_date_list[1])
         is_day_equal = int(today_date_list[2]) == int(create_date_list[2])
         return is_year_equal and is_month_equal and is_day_equal
-
-    @staticmethod
-    def get_help_doc():
-        return help_doc
 
     @Aspect.record_operation(Operation.Type.ADD_TASK.value)
     def add_task(self, task):
@@ -173,3 +170,50 @@ class Service:
     @Aspect.record_operation(Operation.Type.UPDATE_TASK_STEP.value)
     def finish_task_step(self, task_step):
         self.task_step_dao.update_task_step_status_and_finish_time(task_step)
+
+
+class ConfigService:
+    def __init__(self):
+        self.custom_config = CustomConfig()
+
+    def set_config(self, config):
+        self.custom_config.set(config.key, config.value)
+        return self.get_config(config)
+
+    def get_config(self, config):
+        key = config.key
+        value = self.custom_config.get(config.key)
+        return '%s = %s' % (key, value)
+
+    def delete_config(self, config):
+        key = config.key
+        self.custom_config.delete(key)
+        return '%s = None' % key
+
+    def list_config(self):
+        all_config_info = ''
+        config_dict = self.custom_config.list()
+        for key, value in config_dict.items():
+            all_config_info += '%s = %s\n' % (key, value)
+        return all_config_info
+
+    @staticmethod
+    def get_help_doc():
+        return help_doc
+
+
+class ServerService:
+    def __init__(self):
+        self.api = Api()
+        self.user_dao = UserDao()
+
+    def login(self, user_auth):
+        result = self.api.login(user_auth.username, user_auth.password)
+        if isinstance(result, User):
+            self.__add_user_to_db(result)
+            return '%s, welcome!' % result.username
+        return result
+
+    def __add_user_to_db(self, user):
+        self.user_dao.delete_user()
+        self.user_dao.insert_user(user)

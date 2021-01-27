@@ -1,13 +1,14 @@
 import unittest
 
-from daily.model import Task, TaskStep
-from daily.dao import TaskDao, TaskStepDao
+from daily.model import Task, TaskStep, User
+from daily.dao import TaskDao, TaskStepDao, UserDao
 
 
 class DaoTest(unittest.TestCase):
     def setUp(self):
         self.task_dao = TaskDao()
         self.task_step_dao = TaskStepDao()
+        self.user_dao = UserDao()
 
     def test_manage_task(self):
         task = Task()
@@ -63,3 +64,20 @@ class DaoTest(unittest.TestCase):
         self.task_step_dao.delete_task_step(task_step)
         new_task_step = self.task_step_dao.find_task_step_by_task_step_id(task_step.task_step_id)
         self.assertIsNone(new_task_step)
+
+    def test_user(self):
+        user = User()
+        user.user_id = 'user_id'
+        user.username = 'username'
+        user.jwt = 'jwt'
+
+        self.user_dao.insert_user(user)
+        new_user = self.user_dao.find_user()
+        self.assertIsNotNone(new_user)
+        self.assertEqual(new_user.user_id, user.user_id)
+        self.assertEqual(new_user.username, user.username)
+        self.assertEqual(new_user.jwt, user.jwt)
+
+        self.user_dao.delete_user()
+        new_user = self.user_dao.find_user()
+        self.assertIsNone(new_user)

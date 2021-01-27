@@ -1,11 +1,11 @@
 import sqlite3
-from daily.config import GlobalConfig
-from daily.model import Task, TaskStep
+from daily.config import DataConfig
+from daily.model import Task, TaskStep, User
 
 
 class DaoBase:
     def __init__(self):
-        data_file = GlobalConfig().get_data_file_path()
+        data_file = DataConfig().get_data_file_path()
         self.connect = sqlite3.connect(data_file)
         self.cursor = self.connect.cursor()
         self._init_table()
@@ -193,3 +193,46 @@ class OperationDao(DaoBase):
     def update_operation_status(self, operation):
         self.cursor.execute(self.__SQL_UPDATE_OPERATION_STATUS, (operation.status, operation.operation_id))
         self.connect.commit()
+
+
+class UserDao(DaoBase):
+    __SQL_CREATE_USER = "CREATE TABLE `USER` (\
+    `USER_ID` varchar(32) NOT NULL,\
+    `USERNAME` varchar(100) NOT NULL,\
+    `JWT` varchar(512) NOT NULL,\
+    PRIMARY KEY (USER_ID)\
+    )"
+    __SQL_SELECT_TABLE_USER_COUNT = "SELECT COUNT(*) FROM `sqlite_master` WHERE type='table' AND name='USER'"
+    __SQL_SELECT_USER = "SELECT * FROM `USER`"
+    __SQL_INSERT_USER = "INSERT INTO `USER`(USER_ID, USERNAME, JWT) VALUES (?, ?, ?)"
+    __SQL_DELETE_USER = "DELETE FROM `USER`"
+
+    def _init_table(self):
+        if not self.__is_table_user_exist():
+            self.cursor.execute(self.__SQL_CREATE_USER)
+
+    def __is_table_user_exist(self):
+        table_task_count = self.cursor.execute(self.__SQL_SELECT_TABLE_USER_COUNT).fetchall()[0][0]
+        return table_task_count == 1
+
+    def find_user(self):
+        user_tuple = self.cursor.execute(self.__SQL_SELECT_USER).fetchone()
+        return self.__trans_to_user(user_tuple)
+
+    def insert_user(self, user):
+        self.cursor.execute(self.__SQL_INSERT_USER, (user.user_id, user.username, user.jwt))
+        self.connect.commit()
+
+    def delete_user(self):
+        self.cursor.execute(self.__SQL_DELETE_USER)
+        self.connect.commit()
+
+    @staticmethod
+    def __trans_to_user(user_tuple):
+        if user_tuple is None:
+            return None
+        user = User()
+        user.user_id = user_tuple[0]
+        user.username = user_tuple[1]
+        user.jwt = user_tuple[2]
+        return user
